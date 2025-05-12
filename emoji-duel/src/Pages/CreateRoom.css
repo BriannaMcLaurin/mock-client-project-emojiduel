@@ -1,0 +1,58 @@
+.create-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "Poppins", sans-serif;
+    color: white;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 80px;
+    font-weight: 800;
+    color: #FFC233;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    margin-top: -160px;
+  }
+  
+  .subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+  }
+  
+  .room-code {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+    padding: 0.8rem 2rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .btn.copy-btn {
+    background-color: #3D7FFF;
+    color: white;
+    border: none;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+  }
+  
+  .btn.copy-btn:hover {
+    background-color: #285fd6;
+    transform: scale(1.05);
+  }
+  
+  .waiting-msg {
+    margin-top: 2rem;
+    color: #ccc;
+    font-size: 1rem;
+  }
+  

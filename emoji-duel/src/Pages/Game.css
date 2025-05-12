@@ -1,0 +1,100 @@
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins", sans-serif;
+  color: white;
+  text-align: center;
+}
+
+.game-title {
+  font-size: 80px;
+  font-weight: 800;
+  color: #FFC233;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  margin-top: -80px;
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 2rem;
+}
+
+.player-score {
+  flex: 1;
+  margin: 0 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.player-score p {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.player-score h2 {
+  font-size: 2rem;
+  color: white;
+  margin: 0;
+}
+
+.player-score.blue {
+  border: 3px solid #4da6ff;
+}
+
+.player-score.red {
+  border: 3px solid #ff6666;
+}
+
+.emoji-area {
+  margin: 2rem 0;
+  height: 120px;
+}
+
+.emoji-flash {
+  font-size: 5rem;
+  animation: blink 0.2s infinite;
+  user-select: none;
+}
+
+
+.emoji-button {
+  font-size: 5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.emoji-button:hover {
+  transform: scale(1.3);
+}
+
+.emoji-button:active {
+  transform: scale(0.9);
+}
+
+.best-of {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  color: #666;
+}
+
+.winner-text {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #28a745;
+  margin-top: 1rem;
+}
+.btn{
+  background-color: #3D7FFF;
+  font-size: 30px;
+  font-weight: 500;
+  color: white;
+}
