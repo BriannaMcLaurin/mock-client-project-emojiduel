@@ -3,13 +3,17 @@ import { ref, onValue, update } from "firebase/database";
 import database from "../firebase";
 import "./Game.css";
 
-const EMOJIS = [
-  "🔥", "😂", "💀", "🌟", "🎯", "🍕", "🐶", "👻", "🎮", "🚀",
-  "🦄", "🧠", "🎃", "🐱", "🥳", "🤖", "🛸", "🌈", "🌍", "🪐"
-];
+const EMOJI_SETS = {
+  food: ["🍕", "🍔", "🌮", "🍟", "🍩", "🍉", "🍇", "🍓"],
+  animals: ["🐶", "🐱", "🐵", "🐸", "🐼", "🦄", "🐰"],
+  faces: ["😂", "😍", "😭", "😡", "😱", "😴", "🤪"],
+  random: [
+    "🔥", "😂", "💀", "🌟", "🎯", "🍕", "🐶", "👻", "🎮", "🚀",
+    "🦄", "🧠", "🎃", "🐱", "🥳", "🤖", "🛸", "🌈", "🌍", "🪐"
+  ]
+};
 
 function Game({ nickname, roomCode }) {
-   // keeps track of all game states
   const [playerRole, setPlayerRole] = useState("");
   const [player1Name, setPlayer1Name] = useState("Player 1");
   const [player2Name, setPlayer2Name] = useState("Player 2");
@@ -20,11 +24,9 @@ function Game({ nickname, roomCode }) {
   const [winner, setWinner] = useState("");
   const [isLocked, setIsLocked] = useState(false);
   const [tapped, setTapped] = useState(false);
+  const [emojiCategory, setEmojiCategory] = useState("random");
 
-  // Sync player role and game state from Firebase
   useEffect(() => {
-    if (!roomCode) return;
-
     const roomRef = ref(database, `rooms/${roomCode}`);
     onValue(roomRef, (snapshot) => {
       const data = snapshot.val();
@@ -34,9 +36,10 @@ function Game({ nickname, roomCode }) {
       setRound(data.round || 1);
       setTargetEmoji(data.targetEmoji || "");
       setWinner(data.winner || "");
+      setEmojiCategory(data.emojiCategory || "random");
 
-      if (data.player1) setPlayer1Name(data.player1);
-      if (data.player2) setPlayer2Name(data.player2);
+      setPlayer1Name(data.player1 || "Player 1");
+      setPlayer2Name(data.player2 || "Player 2");
 
       if (!playerRole) {
         if (data.player1 === nickname) setPlayerRole("player1");
@@ -45,21 +48,21 @@ function Game({ nickname, roomCode }) {
     });
   }, [roomCode, nickname, playerRole]);
 
-  // emoji rotation and locking target
   useEffect(() => {
     if (round > 5 || winner) return;
 
+    const emojis = EMOJI_SETS[emojiCategory] || EMOJI_SETS["random"];
     let intervalId;
 
     if (!targetEmoji) {
       intervalId = setInterval(() => {
-        const random = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+        const random = emojis[Math.floor(Math.random() * emojis.length)];
         setRotatingEmoji(random);
       }, 75);
 
       setTimeout(() => {
         clearInterval(intervalId);
-        const finalEmoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+        const finalEmoji = emojis[Math.floor(Math.random() * emojis.length)];
         const roomRef = ref(database, `rooms/${roomCode}`);
         update(roomRef, {
           targetEmoji: finalEmoji,
@@ -69,15 +72,13 @@ function Game({ nickname, roomCode }) {
     }
 
     return () => clearInterval(intervalId);
-  }, [targetEmoji, round, winner]);
+  }, [targetEmoji, round, winner, emojiCategory, roomCode]);
 
-  // Declares winner once after round 5
   useEffect(() => {
     if (round > 5 && !winner && playerRole === "player1") {
       let result = "Tie";
       if (scores.player1 > scores.player2) result = `${player1Name} Wins!`;
       else if (scores.player2 > scores.player1) result = `${player2Name} Wins!`;
-
       const roomRef = ref(database, `rooms/${roomCode}`);
       update(roomRef, { winner: result });
     }
@@ -87,7 +88,6 @@ function Game({ nickname, roomCode }) {
     if (round > 5 || isLocked || tapped || !targetEmoji || winner) return;
 
     setIsLocked(true);
-
     const roomRef = ref(database, `rooms/${roomCode}`);
     onValue(roomRef, (snapshot) => {
       const data = snapshot.val();
@@ -116,8 +116,8 @@ function Game({ nickname, roomCode }) {
   };
 
   const handlePlayAgain = () => window.location.reload();
+  const handleExit = () => window.location.href = "/";
 
-  // Game Over Screen
   if (winner) {
     return (
       <div className="game-container">
@@ -127,7 +127,7 @@ function Game({ nickname, roomCode }) {
           <p><strong>{player1Name}:</strong> {scores.player1}</p>
           <p><strong>{player2Name}:</strong> {scores.player2}</p>
         </div>
-        <div className="gameover-button">
+        <div className="gameover-buttons">
           <button className="btn" onClick={handlePlayAgain}>🔁 Play Again</button>
         </div>
       </div>
@@ -136,7 +136,6 @@ function Game({ nickname, roomCode }) {
 
   return (
     <div className="game-container">
-      
       <h1 className="game-title">EMOJI DUEL</h1>
       <div className="scoreboard">
         <div className="player-score blue">

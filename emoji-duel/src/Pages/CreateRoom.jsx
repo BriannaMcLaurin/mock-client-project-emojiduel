@@ -6,8 +6,8 @@ import "./CreateRoom.css";
 function CreateRoom({ nickname, onLobbyEnter }) {
   const [roomCode, setRoomCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [emojiCategory, setEmojiCategory] = useState("random");
 
-  // Generate random 6-character room code
   const generateRoomCode = () =>
     Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -25,16 +25,17 @@ function CreateRoom({ nickname, onLobbyEnter }) {
         player1: 0,
         player2: 0,
       },
+      emojiCategory: emojiCategory,
     });
 
-    // Wait for player2 to join
+    // Listen for player2
     onValue(roomRef, (snapshot) => {
       const data = snapshot.val();
       if (data?.player2) {
         onLobbyEnter(nickname, code);
       }
     });
-  }, [nickname, onLobbyEnter]);
+  }, [nickname, onLobbyEnter, emojiCategory]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(roomCode);
@@ -44,13 +45,26 @@ function CreateRoom({ nickname, onLobbyEnter }) {
 
   return (
     <div className="create-container">
-      <h1 className="title">Emoji Duel⚔️</h1>
+      <h1 className="title">Emoji Duel</h1>
       <p className="subtitle">Room Code:</p>
       <h2 className="room-code">{roomCode}</h2>
 
       <button className="btn copy-btn" onClick={handleCopy}>
         {copied ? "Copied!" : "Copy Room Code"}
       </button>
+
+      <div className="category-select">
+        <label>Select Emoji Category:</label>
+        <select
+          value={emojiCategory}
+          onChange={(e) => setEmojiCategory(e.target.value)}
+        >
+          <option value="random">🎮 Random</option>
+          <option value="food">🍕 Food</option>
+          <option value="animals">🐶 Animals</option>
+          <option value="faces">😂 Faces</option>
+        </select>
+      </div>
 
       <p className="waiting-msg">Waiting for Player 2 to join...</p>
     </div>

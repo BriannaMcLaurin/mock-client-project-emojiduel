@@ -52,7 +52,7 @@ function JoinRoom({ onJoinSuccess }) {
         placeholder="Enter room code"
         value={roomCode}
         onChange={(e) => setRoomCode(e.target.value)}
-        className="input"
+        className="input2"
       />
       </div>
 

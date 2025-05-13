@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import Home from "./Pages/Home";
 import JoinRoom from "./Pages/JoinRoom";
 import CreateRoom from "./Pages/CreateRoom";
-import Lobby from "./Pages/Lobby";
 import Game from "./Pages/Game";
 import "./App.css";
+import Lobby from "./Pages/Lobby";
 
 function App() {
   const [screen, setScreen] = useState("home");
