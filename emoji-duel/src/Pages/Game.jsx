@@ -48,6 +48,7 @@ function Game({ nickname, roomCode }) {
     });
   }, [roomCode, nickname, playerRole]);
 
+  // Emoji rotation and lock-in
   useEffect(() => {
     if (round > 5 || winner) return;
 
@@ -74,11 +75,13 @@ function Game({ nickname, roomCode }) {
     return () => clearInterval(intervalId);
   }, [targetEmoji, round, winner, emojiCategory, roomCode]);
 
+  // Declare winner once after 5 rounds
   useEffect(() => {
     if (round > 5 && !winner && playerRole === "player1") {
       let result = "Tie";
       if (scores.player1 > scores.player2) result = `${player1Name} Wins!`;
       else if (scores.player2 > scores.player1) result = `${player2Name} Wins!`;
+
       const roomRef = ref(database, `rooms/${roomCode}`);
       update(roomRef, { winner: result });
     }
@@ -118,6 +121,7 @@ function Game({ nickname, roomCode }) {
   const handlePlayAgain = () => window.location.reload();
   const handleExit = () => window.location.href = "/";
 
+  // Game Over screen after 5 rounds
   if (winner) {
     return (
       <div className="game-container">
@@ -129,6 +133,7 @@ function Game({ nickname, roomCode }) {
         </div>
         <div className="gameover-buttons">
           <button className="btn" onClick={handlePlayAgain}>🔁 Play Again</button>
+          <button className="btn" onClick={handleExit}>🏠 Exit to Home</button>
         </div>
       </div>
     );
