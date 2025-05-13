@@ -133,7 +133,6 @@ function Game({ nickname, roomCode }) {
         </div>
         <div className="gameover-buttons">
           <button className="btn" onClick={handlePlayAgain}>🔁 Play Again</button>
-          <button className="btn" onClick={handleExit}>🏠 Exit to Home</button>
         </div>
       </div>
     );
