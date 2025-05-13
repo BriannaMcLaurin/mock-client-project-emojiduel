@@ -17,6 +17,9 @@ function Game({ nickname, roomCode }) {
   const [playerRole, setPlayerRole] = useState("");
   const [player1Name, setPlayer1Name] = useState("Player 1");
   const [player2Name, setPlayer2Name] = useState("Player 2");
+  const [emojiCategory, setEmojiCategory] = useState("random");
+  const [bothPlayersReady, setBothPlayersReady] = useState(false);
+
   const [targetEmoji, setTargetEmoji] = useState("");
   const [rotatingEmoji, setRotatingEmoji] = useState("");
   const [scores, setScores] = useState({ player1: 0, player2: 0 });
@@ -24,11 +27,10 @@ function Game({ nickname, roomCode }) {
   const [winner, setWinner] = useState("");
   const [isLocked, setIsLocked] = useState(false);
   const [tapped, setTapped] = useState(false);
-  const [emojiCategory, setEmojiCategory] = useState("random");
 
   useEffect(() => {
     const roomRef = ref(database, `rooms/${roomCode}`);
-    onValue(roomRef, (snapshot) => {
+    const unsubscribe = onValue(roomRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
 
@@ -45,12 +47,17 @@ function Game({ nickname, roomCode }) {
         if (data.player1 === nickname) setPlayerRole("player1");
         else if (data.player2 === nickname) setPlayerRole("player2");
       }
+
+      if (data.player1 && data.player2) {
+        setBothPlayersReady(true);
+      }
     });
+
+    return () => unsubscribe();
   }, [roomCode, nickname, playerRole]);
 
-  // Emoji rotation and lock-in
   useEffect(() => {
-    if (round > 5 || winner) return;
+    if (round > 5 || winner || !bothPlayersReady) return;
 
     const emojis = EMOJI_SETS[emojiCategory] || EMOJI_SETS["random"];
     let intervalId;
@@ -73,9 +80,8 @@ function Game({ nickname, roomCode }) {
     }
 
     return () => clearInterval(intervalId);
-  }, [targetEmoji, round, winner, emojiCategory, roomCode]);
+  }, [targetEmoji, round, winner, emojiCategory, roomCode, bothPlayersReady]);
 
-  // Declare winner once after 5 rounds
   useEffect(() => {
     if (round > 5 && !winner && playerRole === "player1") {
       let result = "Tie";
@@ -121,47 +127,50 @@ function Game({ nickname, roomCode }) {
   const handlePlayAgain = () => window.location.reload();
   const handleExit = () => window.location.href = "/";
 
-  // Game Over screen after 5 rounds
-  if (winner) {
-    return (
-      <div className="game-container">
-        <h1 className="game-title">Game Over 🎉</h1>
-        <h2 className="winner-text">{winner}</h2>
-        <div className="final-scores">
-          <p><strong>{player1Name}:</strong> {scores.player1}</p>
-          <p><strong>{player2Name}:</strong> {scores.player2}</p>
-        </div>
-        <div className="gameover-buttons">
-          <button className="btn" onClick={handlePlayAgain}>🔁 Play Again</button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="game-container">
-      <h1 className="game-title">EMOJI DUEL</h1>
-      <div className="scoreboard">
-        <div className="player-score blue">
-          <p>{player1Name}</p>
-          <h2>{scores.player1}</h2>
-        </div>
-        <div className="player-score red">
-          <p>{player2Name}</p>
-          <h2>{scores.player2}</h2>
-        </div>
-      </div>
-      <div className="emoji-area">
-        {targetEmoji ? (
-          <button className="emoji-button" onClick={handleEmojiClick}>
-            {targetEmoji}
-          </button>
-        ) : (
-          <div className="emoji-flash">{rotatingEmoji}</div>
-        )}
-      </div>
-
-      <p className="best-of">BEST OF {Math.min(round, 5)} OUT OF 5</p>
+      {!bothPlayersReady ? (
+        <>
+          <h1 className="game-title">Waiting for both players to join...</h1>
+          <p className="waiting-msg">Room Code: {roomCode}</p>
+        </>
+      ) : winner ? (
+        <>
+          <h1 className="game-title">Game Over 🎉</h1>
+          <h2 className="winner-text">{winner}</h2>
+          <div className="final-scores">
+            <p><strong>{player1Name}:</strong> {scores.player1}</p>
+            <p><strong>{player2Name}:</strong> {scores.player2}</p>
+          </div>
+          <div className="gameover-buttons">
+            <button className="btn" onClick={handlePlayAgain}>🔁 Play Again</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <h1 className="game-title">EMOJI DUEL</h1>
+          <div className="scoreboard">
+            <div className="player-score blue">
+              <p>{player1Name}</p>
+              <h2>{scores.player1}</h2>
+            </div>
+            <div className="player-score red">
+              <p>{player2Name}</p>
+              <h2>{scores.player2}</h2>
+            </div>
+          </div>
+          <div className="emoji-area">
+            {targetEmoji ? (
+              <button className="emoji-button" onClick={handleEmojiClick}>
+                {targetEmoji}
+              </button>
+            ) : (
+              <div className="emoji-flash">{rotatingEmoji}</div>
+            )}
+          </div>
+          <p className="best-of">BEST OF {Math.min(round, 5)} OUT OF 5</p>
+        </>
+      )}
     </div>
   );
 }

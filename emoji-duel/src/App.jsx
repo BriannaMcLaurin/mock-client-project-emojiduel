@@ -4,7 +4,6 @@ import JoinRoom from "./Pages/JoinRoom";
 import CreateRoom from "./Pages/CreateRoom";
 import Game from "./Pages/Game";
 import "./App.css";
-import Lobby from "./Pages/Lobby";
 
 function App() {
   const [screen, setScreen] = useState("home");
@@ -21,11 +20,7 @@ function App() {
   const handleJoinSuccess = (name, code) => {
     setNickname(name);
     setRoomCode(code);
-    setScreen("lobby");
-  };
-
-  const handleGameStart = () => {
-    setScreen("game");
+    setScreen("game"); // go directly to Game
   };
 
   if (screen === "home") {
@@ -43,18 +38,8 @@ function App() {
         onLobbyEnter={(name, code) => {
           setNickname(name);
           setRoomCode(code);
-          setScreen("lobby");
+          setScreen("game"); // go directly to Game
         }}
-      />
-    );
-  }
-
-  if (screen === "lobby") {
-    return (
-      <Lobby
-        nickname={nickname}
-        roomId={roomCode}
-        onGameStart={handleGameStart}
       />
     );
   }
