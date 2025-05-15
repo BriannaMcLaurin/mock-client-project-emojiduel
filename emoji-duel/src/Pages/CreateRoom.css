@@ -8,13 +8,13 @@
     text-align: center;
   }
   
-  .title {
+  .title1 {
     font-size: 80px;
     font-weight: 800;
     color: #FFC233;
     margin-bottom: 2rem;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
-    margin-top: -160px;
+    margin-top: -70px;
   }
   
   .subtitle {

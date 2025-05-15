@@ -45,7 +45,7 @@ function CreateRoom({ nickname, onLobbyEnter }) {
 
   return (
     <div className="create-container">
-      <h1 className="title">Emoji Duel</h1>
+      <h1 className="title1">Emoji Duel</h1>
       <p className="subtitle">Room Code:</p>
       <h2 className="room-code">{roomCode}</h2>
 
