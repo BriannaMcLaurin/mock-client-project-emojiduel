@@ -42,7 +42,7 @@ function JoinRoom({ onJoinSuccess }) {
       <div className="inputs">
       <input
         type="text"
-        placeholder="Enter your nickname"
+        placeholder="Enter nickname"
         value={nickname}
         onChange={(e) => setNickname(e.target.value)}
         className="input"

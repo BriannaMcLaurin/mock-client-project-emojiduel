@@ -26,7 +26,7 @@ function Home({ onJoin, onCreate }) {
 
       <input
         type="text"
-        placeholder="Enter your nickname"
+        placeholder="Enter nickname"
         value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             className="nickname-input"
