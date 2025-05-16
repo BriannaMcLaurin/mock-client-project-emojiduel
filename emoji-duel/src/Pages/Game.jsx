@@ -28,6 +28,12 @@ function Game({ nickname, roomCode }) {
   const [isLocked, setIsLocked] = useState(false);
   const [tapped, setTapped] = useState(false);
 
+  // Countdown states
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [countdownValue, setCountdownValue] = useState(3);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  // Listen to room state
   useEffect(() => {
     const roomRef = ref(database, `rooms/${roomCode}`);
     const unsubscribe = onValue(roomRef, (snapshot) => {
@@ -56,8 +62,28 @@ function Game({ nickname, roomCode }) {
     return () => unsubscribe();
   }, [roomCode, nickname, playerRole]);
 
+  // Handle countdown before round 1
   useEffect(() => {
-    if (round > 5 || winner || !bothPlayersReady) return;
+    if (bothPlayersReady && round === 1 && !hasStarted) {
+      setShowCountdown(true);
+      setHasStarted(true);
+
+      let counter = 3;
+      const interval = setInterval(() => {
+        setCountdownValue(counter);
+        counter--;
+
+        if (counter < 0) {
+          clearInterval(interval);
+          setShowCountdown(false);
+        }
+      }, 1000);
+    }
+  }, [bothPlayersReady, round, hasStarted]);
+
+  // Rotate emojis before setting a target
+  useEffect(() => {
+    if (round > 5 || winner || showCountdown || !bothPlayersReady) return;
 
     const emojis = EMOJI_SETS[emojiCategory] || EMOJI_SETS["random"];
     let intervalId;
@@ -80,8 +106,9 @@ function Game({ nickname, roomCode }) {
     }
 
     return () => clearInterval(intervalId);
-  }, [targetEmoji, round, winner, emojiCategory, roomCode, bothPlayersReady]);
+  }, [targetEmoji, round, winner, emojiCategory, roomCode, showCountdown, bothPlayersReady]);
 
+  // Declare winner
   useEffect(() => {
     if (round > 5 && !winner && playerRole === "player1") {
       let result = "Tie";
@@ -94,7 +121,7 @@ function Game({ nickname, roomCode }) {
   }, [round, winner, scores, player1Name, player2Name, playerRole, roomCode]);
 
   const handleEmojiClick = () => {
-    if (round > 5 || isLocked || tapped || !targetEmoji || winner) return;
+    if (round > 5 || isLocked || tapped || !targetEmoji || winner || showCountdown) return;
 
     setIsLocked(true);
     const roomRef = ref(database, `rooms/${roomCode}`);
@@ -129,11 +156,10 @@ function Game({ nickname, roomCode }) {
 
   return (
     <div className="game-container">
-      {!bothPlayersReady ? (
-        <>
-          <h1 className="game-title">Waiting for both players to join...</h1>
-          <p className="waiting-msg">Room Code: {roomCode}</p>
-        </>
+      {showCountdown ? (
+        <h1 className="countdown-text">
+          {countdownValue > 0 ? countdownValue : "GO!"}
+        </h1>
       ) : winner ? (
         <>
           <h1 className="game-title">Game Over 🎉</h1>
